@@ -1,0 +1,1646 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#FAFAF7" />
+  <title>Plan Integral</title>
+  <style>
+    /* Reset */
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html, body { height: 100%; }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: #FAFAF7;
+      color: #2C2C2C;
+      font-size: 16px;
+      line-height: 1.45;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+    input, select, textarea { font-family: inherit; font-size: 16px; }
+
+    /* Layout */
+    .app { max-width: 720px; margin: 0 auto; min-height: 100vh; padding-bottom: 80px; }
+    .screen { padding: 20px 16px 16px; }
+    .hidden { display: none !important; }
+
+    /* Hub de entrada */
+    .hub {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+      gap: 28px;
+      background: linear-gradient(180deg, #FAFAF7 0%, #F2F0EA 100%);
+    }
+    .hub h1 {
+      font-size: 28px;
+      font-weight: 600;
+      color: #2C2C2C;
+      text-align: center;
+      letter-spacing: -0.5px;
+    }
+    .hub p { color: #6B6B6B; text-align: center; max-width: 320px; }
+    .hub-cards { display: flex; flex-direction: column; gap: 16px; width: 100%; max-width: 360px; }
+    .hub-card {
+      background: #FFF;
+      border: 1px solid #E8E6E1;
+      border-radius: 14px;
+      padding: 28px 24px;
+      text-align: center;
+      font-size: 20px;
+      font-weight: 500;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .hub-card:hover, .hub-card:active {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+    }
+    .hub-card .emoji { font-size: 36px; display: block; margin-bottom: 8px; }
+    .hub-card.lucia { border-top: 3px solid #C8A2C8; }
+    .hub-card.alfredo { border-top: 3px solid #A8B5C8; }
+
+    /* Header del panel */
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 16px 8px;
+      border-bottom: 1px solid #E8E6E1;
+    }
+    .panel-header h2 { font-size: 20px; font-weight: 600; }
+    .panel-header .change-profile {
+      font-size: 13px;
+      color: #6B6B6B;
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid #E8E6E1;
+    }
+
+    /* Menú inferior */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #FFF;
+      border-top: 1px solid #E8E6E1;
+      display: flex;
+      justify-content: space-around;
+      padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+      z-index: 100;
+    }
+    .bottom-nav button {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      padding: 6px 4px;
+      color: #6B6B6B;
+      font-size: 11px;
+      transition: color 0.15s;
+    }
+    .bottom-nav button .nav-icon { font-size: 22px; }
+    .bottom-nav button.active { color: #8FA68E; }
+
+    /* Cards */
+    .card {
+      background: #FFF;
+      border: 1px solid #E8E6E1;
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .card-title { font-size: 17px; font-weight: 600; margin-bottom: 4px; }
+    .card-subtitle { font-size: 13px; color: #6B6B6B; margin-bottom: 12px; }
+    .card-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    /* Botones */
+    .btn {
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-primary { background: #8FA68E; color: #FFF; }
+    .btn-primary:hover { background: #7C9279; }
+    .btn-secondary { background: #F2F0EA; color: #2C2C2C; border: 1px solid #E8E6E1; }
+    .btn-secondary:hover { background: #E8E6E1; }
+    .btn-ghost { color: #6B6B6B; padding: 8px 12px; }
+    .btn-danger { color: #C66; }
+    .btn-block { width: 100%; justify-content: center; }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    /* Forms */
+    .form-group { margin-bottom: 14px; }
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: #6B6B6B;
+      margin-bottom: 4px;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #E8E6E1;
+      border-radius: 6px;
+      background: #FFF;
+      color: #2C2C2C;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #8FA68E;
+    }
+    .form-row { display: flex; gap: 8px; }
+    .form-row > * { flex: 1; }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 200;
+      animation: fadeIn 0.2s;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .modal {
+      background: #FFF;
+      border-radius: 14px 14px 0 0;
+      width: 100%;
+      max-width: 720px;
+      max-height: 92vh;
+      overflow-y: auto;
+      padding: 20px 16px calc(20px + env(safe-area-inset-bottom));
+      animation: slideUp 0.25s;
+    }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .modal-title { font-size: 18px; font-weight: 600; }
+    .modal-close { font-size: 24px; color: #6B6B6B; padding: 4px 8px; }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 88px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #2C2C2C;
+      color: #FFF;
+      padding: 10px 18px;
+      border-radius: 24px;
+      font-size: 14px;
+      z-index: 300;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      opacity: 0;
+      transition: opacity 0.25s;
+    }
+    .toast.show { opacity: 1; }
+
+    /* Exercise display */
+    .exercise-row {
+      padding: 12px 0;
+      border-bottom: 1px solid #F2F0EA;
+    }
+    .exercise-row:last-child { border-bottom: none; }
+    .exercise-name { font-weight: 500; margin-bottom: 2px; }
+    .exercise-detail { font-size: 13px; color: #6B6B6B; }
+    .exercise-note { font-size: 12px; color: #8FA68E; font-style: italic; margin-top: 4px; }
+
+    /* Set inputs */
+    .set-input-row {
+      display: grid;
+      grid-template-columns: 40px 1fr 1fr;
+      gap: 6px;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .set-input-row .set-label { font-size: 13px; color: #6B6B6B; text-align: center; }
+    .set-input-row input {
+      padding: 6px 8px;
+      border: 1px solid #E8E6E1;
+      border-radius: 4px;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    /* History items */
+    .history-item {
+      padding: 12px;
+      background: #FAFAF7;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+    .history-item .date { font-weight: 500; color: #2C2C2C; }
+    .history-item .detail { color: #6B6B6B; font-size: 13px; margin-top: 4px; }
+
+    /* Empty states */
+    .empty-state {
+      text-align: center;
+      padding: 32px 16px;
+      color: #6B6B6B;
+    }
+    .empty-state .emoji { font-size: 48px; display: block; margin-bottom: 12px; }
+
+    /* Meal planning */
+    .meal-block {
+      padding: 12px;
+      background: #FAFAF7;
+      border-left: 3px solid #8FA68E;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+    .meal-type {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: #8FA68E;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+    .meal-description { font-size: 14px; color: #2C2C2C; }
+
+    /* Habit list */
+    .habit-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: #FAFAF7;
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+    .habit-icon { font-size: 24px; }
+    .habit-info { flex: 1; }
+    .habit-name { font-weight: 500; }
+    .habit-streak { font-size: 12px; color: #6B6B6B; }
+    .habit-check {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 2px solid #E8E6E1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      transition: all 0.15s;
+    }
+    .habit-check.done {
+      background: #8FA68E;
+      border-color: #8FA68E;
+      color: #FFF;
+    }
+    .habit-edit { color: #6B6B6B; font-size: 14px; padding: 6px; }
+
+    /* Calendar grid */
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 3px;
+      margin-top: 12px;
+    }
+    .calendar-cell {
+      aspect-ratio: 1;
+      background: #F2F0EA;
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: #6B6B6B;
+    }
+    .calendar-cell.done { background: #8FA68E; color: #FFF; }
+    .calendar-cell.future { opacity: 0.4; }
+
+    /* Selector pills */
+    .pill-row {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      margin-bottom: 12px;
+      padding-bottom: 4px;
+    }
+    .pill {
+      padding: 6px 12px;
+      border: 1px solid #E8E6E1;
+      border-radius: 16px;
+      font-size: 13px;
+      white-space: nowrap;
+      background: #FFF;
+    }
+    .pill.active { background: #8FA68E; color: #FFF; border-color: #8FA68E; }
+
+    /* Tracking chart */
+    .chart-container {
+      background: #FAFAF7;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+    .chart-svg { width: 100%; height: 180px; }
+
+    /* Stat row */
+    .stat-row { display: flex; gap: 8px; margin-bottom: 12px; }
+    .stat-box {
+      flex: 1;
+      background: #FAFAF7;
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+    }
+    .stat-label { font-size: 11px; color: #6B6B6B; text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-value { font-size: 22px; font-weight: 600; color: #2C2C2C; margin-top: 2px; }
+    .stat-value.accent { color: #8FA68E; }
+
+    /* Loading */
+    .loading {
+      text-align: center;
+      padding: 24px;
+      color: #6B6B6B;
+      font-size: 14px;
+    }
+
+    /* Error / config screen */
+    .config-warning {
+      max-width: 480px;
+      margin: 64px auto;
+      padding: 32px 24px;
+      background: #FFF;
+      border-radius: 12px;
+      border: 1px solid #E8E6E1;
+      text-align: center;
+    }
+    .config-warning h2 { margin-bottom: 12px; }
+    .config-warning code {
+      display: block;
+      background: #F2F0EA;
+      padding: 12px;
+      border-radius: 6px;
+      font-family: ui-monospace, monospace;
+      font-size: 13px;
+      margin: 12px 0;
+      text-align: left;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    /* Tabla simple */
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { padding: 8px; text-align: left; border-bottom: 1px solid #E8E6E1; }
+    th { color: #6B6B6B; font-weight: 500; font-size: 12px; }
+
+    /* Detalle progresión */
+    .progression {
+      font-size: 12px;
+      color: #8FA68E;
+      margin-left: 4px;
+    }
+    .progression.down { color: #C66; }
+
+    /* Tag adherencia */
+    .tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+    .tag-good { background: #E1EAE0; color: #5A7958; }
+    .tag-bad { background: #F6E1DD; color: #A05B4D; }
+  </style>
+</head>
+<body>
+
+<div id="app" class="app"></div>
+<div id="toast" class="toast"></div>
+
+<script>
+  // === CONFIGURAR ANTES DE USAR ===
+  const SUPABASE_URL = 'PEGAR_AQUI_TU_PROJECT_URL';
+  const SUPABASE_ANON_KEY = 'PEGAR_AQUI_TU_ANON_KEY';
+  // =================================
+
+  // -----------------------------------------------------------
+  // Cliente mínimo para la API REST de Supabase
+  // -----------------------------------------------------------
+  const sb = {
+    async request(method, path, body) {
+      const url = `${SUPABASE_URL}/rest/v1/${path}`;
+      const opts = {
+        method,
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=representation'
+        }
+      };
+      if (body !== undefined) opts.body = JSON.stringify(body);
+      const res = await fetch(url, opts);
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`Supabase ${res.status}: ${text}`);
+      }
+      const text = await res.text();
+      return text ? JSON.parse(text) : null;
+    },
+    select(table, query = '') { return this.request('GET', `${table}?${query}`); },
+    insert(table, rows) { return this.request('POST', table, Array.isArray(rows) ? rows : [rows]); },
+    update(table, query, patch) { return this.request('PATCH', `${table}?${query}`, patch); },
+    delete(table, query) { return this.request('DELETE', `${table}?${query}`); },
+    upsert(table, rows) {
+      const path = table;
+      return fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'resolution=merge-duplicates,return=representation'
+        },
+        body: JSON.stringify(Array.isArray(rows) ? rows : [rows])
+      }).then(async r => {
+        if (!r.ok) throw new Error(await r.text());
+        const t = await r.text();
+        return t ? JSON.parse(t) : null;
+      });
+    }
+  };
+
+  // -----------------------------------------------------------
+  // Datos estáticos: rutinas, plan de alimentación, hábitos
+  // -----------------------------------------------------------
+  const ROUTINE = {
+    martes: {
+      label: 'MARTES — Tren inferior',
+      duration: '50 min',
+      exercises: [
+        { name: 'Sentadilla con barra (back squat)', sets: 4, reps: '8-10', note: 'El rey. Bajar hasta que muslos queden paralelos al suelo.' },
+        { name: 'Peso muerto rumano con mancuernas', sets: 3, reps: '10-12', note: 'Espalda recta, sentir glúteo e isquios estirar.' },
+        { name: 'Hip thrust con barra o máquina', sets: 4, reps: '10-12', note: 'Crítico para glúteos. Apoya espalda alta en banca.' },
+        { name: 'Prensa de piernas', sets: 3, reps: '12', note: 'Pies más arriba en plataforma = más glúteo.' },
+        { name: 'Curl de isquios sentada (máquina)', sets: 3, reps: '12', note: 'Aislamiento posterior.' },
+        { name: 'Elevación de talones de pie', sets: 3, reps: '15', note: 'Pantorrillas.' }
+      ]
+    },
+    jueves: {
+      label: 'JUEVES — Tren superior',
+      duration: '50 min',
+      exercises: [
+        { name: 'Press banca con mancuernas', sets: 4, reps: '8-10', note: 'Mancuernas mejor que barra para hombros femeninos.' },
+        { name: 'Remo con mancuerna a un brazo (apoyada en banca)', sets: 4, reps: '10 por lado', note: 'El mejor para espalda y postura.' },
+        { name: 'Press militar sentada con mancuernas', sets: 3, reps: '10-12', note: 'Hombros.' },
+        { name: 'Jalón al pecho (polea alta)', sets: 3, reps: '10-12', note: 'Espalda alta, define línea de cintura.' },
+        { name: 'Curl de bíceps con mancuernas', sets: 3, reps: '12', note: 'Brazos firmes.' },
+        { name: 'Extensión de tríceps en polea', sets: 3, reps: '12', note: 'Adiós al brazo flácido.' },
+        { name: 'Plancha', sets: 3, reps: '30-45 seg', note: 'Core.' }
+      ]
+    },
+    sabado: {
+      label: 'SÁBADO — Full body',
+      duration: '45-50 min',
+      exercises: [
+        { name: 'Sentadilla goblet con mancuerna', sets: 3, reps: '12', note: 'Más liviana que martes.' },
+        { name: 'Peso muerto sumo con mancuerna', sets: 3, reps: '12', note: 'Pies anchos, agarra mancuerna por arriba.' },
+        { name: 'Press inclinado con mancuernas', sets: 3, reps: '10-12', note: 'Banca a 30-45°.' },
+        { name: 'Remo en máquina o polea baja', sets: 3, reps: '12', note: 'Espalda media.' },
+        { name: 'Estocadas caminando con mancuernas', sets: 3, reps: '10 por pierna', note: 'Glúteo + cardio.' },
+        { name: 'Aperturas con mancuernas o pec deck', sets: 3, reps: '12', note: 'Pecho.' },
+        { name: 'Abdominales en polea (cable crunch)', sets: 3, reps: '15', note: 'Core con carga.' }
+      ]
+    }
+  };
+
+  const MEAL_PLAN = {
+    1: {
+      lunes: {
+        desayuno: { lucia: '3 huevos revueltos con espinaca + 1/2 tostada masa madre con palta + 150 g yogur griego con arándanos', alfredo: '4 huevos + 2 tostadas con palta + 200 g yogur' },
+        almuerzo: { lucia: '120 g pollo prep + 1/3 taza quinoa + DOBLE verduras salteadas + ensalada grande', alfredo: '180 g pollo + 1 taza quinoa + verduras + ensalada' },
+        snack:    { lucia: 'Yogur griego (150 g) + 1 cda chía + arándanos', alfredo: 'Yogur (200 g) + chía + 10 almendras' },
+        cena:     { lucia: 'Sopa de lentejas + 1 huevo poché + verduras salteadas', alfredo: 'Plato grande de lentejas + 2 huevos pochés' }
+      },
+      martes: {
+        desayuno: { lucia: 'Avena overnight con yogur, cacao, 1/2 plátano y chía (preparada anoche)', alfredo: 'Misma + 2 huevos duros' },
+        almuerzo: { lucia: 'Bowl: 1/2 taza lentejas, 120 g pollo desmenuzado, 1/4 palta, tomate, hojas verdes ilimitadas, limón', alfredo: 'Mismo bowl, porción más grande con 180 g pollo' },
+        snack:    { lucia: '1 manzana + 1 cdita mantequilla de maní', alfredo: 'Manzana + 2 cdas mantequilla maní + 10 almendras' },
+        cena:     { lucia: 'Tortilla de zapallo italiano (2 huevos) + queso fresco + ensalada', alfredo: 'Tortilla 4 huevos con queso fresco + ensalada' }
+      },
+      miercoles: {
+        desayuno: { lucia: 'Tortilla de 3 huevos con champiñones y espinaca + caldo de verduras', alfredo: 'Tortilla de 5 huevos + 1 tostada masa madre' },
+        almuerzo: { lucia: 'Salmón al horno (130 g) con cúrcuma + 1/2 camote asado + DOBLE brócoli al vapor', alfredo: 'Salmón (200 g) + camote + brócoli' },
+        snack:    { lucia: '1 trufa de dátil-cacao + té verde', alfredo: '3 trufas + té verde + 1 huevo duro' },
+        cena:     { lucia: 'Reineta a la plancha (130 g) + ensalada grande de hojas verdes con 1/4 palta', alfredo: 'Reineta (180 g) + ensalada + ½ camote' }
+      },
+      jueves: {
+        desayuno: { lucia: 'Yogur griego (200 g) con frutillas, arándanos, chía, 5 almendras y canela + 1 huevo duro', alfredo: 'Yogur (250 g) + 2 huevos duros' },
+        almuerzo: { lucia: 'Pavo salteado (130 g) con DOBLE brócoli, pimentón, ajo y jengibre + 1/3 taza arroz integral', alfredo: 'Misma porción × 1,5 + ¾ taza arroz' },
+        snack:    { lucia: '1 huevo duro + 6 almendras', alfredo: '2 huevos duros + 15 almendras' },
+        cena:     { lucia: 'Salteado de tofu (130 g) con DOBLE verduras + 1/4 taza arroz', alfredo: 'Tofu (150 g) + verduras + arroz' }
+      },
+      viernes: {
+        desayuno: { lucia: '3 huevos revueltos + 1/2 tostada con palta + yogur con arándanos', alfredo: '4 huevos + 2 tostadas + yogur' },
+        almuerzo: { lucia: 'Posta negra a la plancha (120 g) + 1/2 papa al horno + ensalada grande tomate-cebolla-pepino', alfredo: 'Posta (180 g) + 1 papa + ensalada' },
+        snack:    { lucia: 'Quesillo (50 g) con tomate y orégano', alfredo: 'Quesillo + tomate + orégano + 1 huevo duro' },
+        cena:     { lucia: 'Pollo al horno (130 g) con DOBLE verduras asadas (del prep, recalentar)', alfredo: 'Misma porción × 1,5' }
+      },
+      sabado: {
+        desayuno: { lucia: '1/2 pan integral tostado con palta, 2 huevos pochés y tomate + kiwi o naranja', alfredo: '2 tostadas + 2 huevos pochés + palta + fruta' },
+        almuerzo: { lucia: 'Guiso de garbanzos (1/2 taza) con espinaca y pollo (120 g) + ensalada', alfredo: 'Mismo guiso × 1,5' },
+        snack:    { lucia: 'Smoothie: yogur, 1/2 plátano, cacao, agua y chía + whey', alfredo: 'Mismo smoothie + más yogur' },
+        cena:     { lucia: 'Ensalada completa: 1 lata atún, 2 huevos duros, 1/4 palta, 1/4 taza garbanzos, hojas verdes ilimitadas', alfredo: 'Ensalada con 1 lata atún + 2 huevos + más garbanzos' }
+      },
+      domingo: {
+        desayuno: { lucia: 'Yogur (200 g) con berries, chía, 4 nueces + 2 huevos revueltos con espinaca', alfredo: 'Yogur grande + 4 huevos' },
+        almuerzo: { lucia: 'Pollo a la plancha (130 g) con limón y orégano + 1/3 taza quinoa con DOBLE verduras + ensalada', alfredo: 'Misma porción × 1,5' },
+        snack:    { lucia: 'Helado de plátano congelado con cacao', alfredo: 'Mismo + cuadrito chocolate 70%' },
+        cena:     { lucia: '(repite snack en día libre, sin cena formal)', alfredo: '(repite snack en día libre, sin cena formal)' }
+      }
+    },
+    2: {
+      lunes: {
+        desayuno: { lucia: 'Avena overnight con yogur, cacao y 1/2 plátano', alfredo: 'Misma + 2 huevos duros' },
+        almuerzo: { lucia: 'Pollo al curry rápido con leche de coco (light) + 1/3 taza arroz integral', alfredo: 'Curry × 1,5 + ¾ taza arroz' },
+        snack:    { lucia: 'Yogur griego (150 g) con chía y arándanos', alfredo: 'Yogur + chía + 10 almendras' },
+        cena:     { lucia: 'Sopa de lentejas + 2 huevos pochés', alfredo: 'Sopa grande + 2 huevos' }
+      },
+      martes: {
+        desayuno: { lucia: 'Tortilla de 3 huevos con champiñones y espinaca + caldo de verduras', alfredo: 'Tortilla 5 huevos + tostada' },
+        almuerzo: { lucia: 'Pollo a la plancha (130 g) + 1/3 taza quinoa con verduras + ensalada grande', alfredo: 'Pollo × 1,5 + quinoa + ensalada' },
+        snack:    { lucia: '1 manzana + 1 cdita mantequilla de maní', alfredo: 'Manzana + maní + almendras' },
+        cena:     { lucia: 'Crema de zanahoria-jengibre con 130 g pollo desmenuzado encima', alfredo: 'Crema + más pollo + tostada' }
+      },
+      miercoles: {
+        desayuno: { lucia: 'Yogur griego con berries, chía, 5 almendras + 1 huevo duro', alfredo: 'Yogur grande + 2 huevos duros' },
+        almuerzo: { lucia: 'Poke bowl: 1 lata atún + 1/3 taza quinoa + 1/4 palta + pepino + zanahoria + soya y limón', alfredo: 'Mismo bowl con 1 lata atún' },
+        snack:    { lucia: '1 lata atún sobre rodajas de pepino (snack saciante)', alfredo: 'Misma + 1 huevo duro' },
+        cena:     { lucia: 'Pescado a la plancha (130 g) + ensalada grande de hojas verdes con 1/4 palta', alfredo: 'Pescado × 1,5 + ensalada + ½ camote' }
+      },
+      jueves: {
+        desayuno: { lucia: '2 huevos revueltos con espinaca + tostada con palta + yogur', alfredo: '4 huevos + 2 tostadas + yogur' },
+        almuerzo: { lucia: 'Reineta a la plancha (130 g) + puré de coliflor (sin papa) + ensalada', alfredo: 'Reineta × 1,5 + puré + ½ papa al horno' },
+        snack:    { lucia: '1/2 tostada con palta y huevo poché', alfredo: 'Tostada doble + 2 huevos' },
+        cena:     { lucia: 'Salmón (130 g) con DOBLE verduras al wok (sin arroz)', alfredo: 'Salmón × 1,5 + verduras + ¼ taza arroz' }
+      },
+      viernes: {
+        desayuno: { lucia: 'Avena overnight (porción reducida) + 1 huevo duro', alfredo: 'Misma + 2 huevos duros' },
+        almuerzo: { lucia: 'Salteado de tofu (130 g) con DOBLE verduras + 1/3 taza arroz integral', alfredo: 'Tofu × 1,5 + más arroz + más verduras' },
+        snack:    { lucia: '2 trufas dátil-cacao + té verde', alfredo: '3 trufas + té + 10 almendras' },
+        cena:     { lucia: 'Tortilla de zapallo italiano (3 huevos) + ensalada grande', alfredo: 'Tortilla 4 huevos + ensalada + tostada' }
+      },
+      sabado: {
+        desayuno: { lucia: 'Pan integral con palta, huevo poché y tomate + fruta', alfredo: '2 tostadas + 2 huevos + fruta' },
+        almuerzo: { lucia: 'Bowl proteico: 1/2 taza lentejas + 130 g pollo + 1/4 palta + tomate + hojas verdes ilimitadas', alfredo: 'Bowl grande' },
+        snack:    { lucia: 'Smoothie proteico (yogur, 1/2 plátano, cacao, whey)', alfredo: 'Mismo + cuadrito chocolate 70%' },
+        cena:     { lucia: 'Pollo al horno (130 g) con DOBLE verduras asadas', alfredo: 'Pollo × 1,5 + verduras' }
+      },
+      domingo: {
+        desayuno: { lucia: 'Yogur con frutas, nueces, canela + 1 huevo duro', alfredo: 'Yogur grande + 2 huevos' },
+        almuerzo: { lucia: 'Posta negra (130 g) + 1/2 papa + ensalada grande', alfredo: 'Posta × 1,5 + papas' },
+        snack:    { lucia: 'Quesillo (50 g) con tomate y orégano', alfredo: 'Quesillo + tomate + 1 huevo duro' },
+        cena:     { lucia: 'Ensalada completa: 1 lata atún, 2 huevos, 1/4 palta, 1/4 taza garbanzos, verdes ilimitados', alfredo: 'Ensalada grande con doble proteína' }
+      }
+    }
+  };
+
+  const DEFAULT_HABITS = [
+    { name: 'Tomar 2-2.5L de agua', icon: '💧' },
+    { name: 'Dormir 7-8 horas', icon: '😴' },
+    { name: 'Limón en agua tibia al despertar', icon: '🍋' },
+    { name: 'Caminata del día', icon: '🚶' },
+    { name: 'Suplemento/whey', icon: '💊' }
+  ];
+
+  const DAYS_LABEL = {
+    lunes: 'Lunes', martes: 'Martes', miercoles: 'Miércoles',
+    jueves: 'Jueves', viernes: 'Viernes', sabado: 'Sábado', domingo: 'Domingo'
+  };
+  const DAYS_ORDER = ['lunes','martes','miercoles','jueves','viernes','sabado','domingo'];
+
+  const PROTEIN_GOAL = { lucia: { min: 100, max: 115 }, alfredo: { min: 140, max: 160 } };
+  const PROFILE_LABEL = { lucia: 'Lucía', alfredo: 'Alfredo' };
+
+  // -----------------------------------------------------------
+  // Estado de la app
+  // -----------------------------------------------------------
+  const state = {
+    user: localStorage.getItem('plan-integral-user') || null,
+    tab: 'deporte',
+    loading: false
+  };
+
+  function setUser(u) {
+    state.user = u;
+    if (u) localStorage.setItem('plan-integral-user', u);
+    else localStorage.removeItem('plan-integral-user');
+    render();
+  }
+
+  function setTab(t) { state.tab = t; render(); }
+
+  function todayISO() { return new Date().toISOString().slice(0,10); }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2000);
+  }
+
+  function escapeHtml(s) {
+    if (s == null) return '';
+    return String(s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+
+  // -----------------------------------------------------------
+  // Modal
+  // -----------------------------------------------------------
+  function openModal(title, contentHtml, onMount) {
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    overlay.innerHTML = `
+      <div class="modal">
+        <div class="modal-header">
+          <div class="modal-title">${escapeHtml(title)}</div>
+          <button class="modal-close" data-close>×</button>
+        </div>
+        <div class="modal-body">${contentHtml}</div>
+      </div>
+    `;
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay || e.target.dataset.close !== undefined) closeModal();
+    });
+    document.body.appendChild(overlay);
+    if (onMount) onMount(overlay);
+  }
+  function closeModal() {
+    document.querySelectorAll('.modal-overlay').forEach(el => el.remove());
+  }
+
+  // -----------------------------------------------------------
+  // RENDER PRINCIPAL
+  // -----------------------------------------------------------
+  function render() {
+    const app = document.getElementById('app');
+
+    if (!isConfigured()) { app.innerHTML = renderConfigWarning(); return; }
+    if (!state.user) { app.innerHTML = renderHub(); attachHubEvents(); return; }
+
+    app.innerHTML = `
+      <div class="panel-header">
+        <h2>${PROFILE_LABEL[state.user]}</h2>
+        <button class="change-profile" id="btn-change-profile">Cambiar perfil</button>
+      </div>
+      <div class="screen" id="screen-content">
+        <div class="loading">Cargando…</div>
+      </div>
+      <nav class="bottom-nav">
+        <button data-tab="deporte" class="${state.tab==='deporte'?'active':''}">
+          <span class="nav-icon">🏋️</span><span>Deporte</span>
+        </button>
+        <button data-tab="alimentacion" class="${state.tab==='alimentacion'?'active':''}">
+          <span class="nav-icon">🥗</span><span>Alimentación</span>
+        </button>
+        <button data-tab="habitos" class="${state.tab==='habitos'?'active':''}">
+          <span class="nav-icon">✅</span><span>Hábitos</span>
+        </button>
+        <button data-tab="seguimiento" class="${state.tab==='seguimiento'?'active':''}">
+          <span class="nav-icon">📊</span><span>Seguimiento</span>
+        </button>
+      </nav>
+    `;
+
+    document.getElementById('btn-change-profile').addEventListener('click', () => setUser(null));
+    document.querySelectorAll('.bottom-nav button').forEach(b => {
+      b.addEventListener('click', () => setTab(b.dataset.tab));
+    });
+
+    renderTab();
+  }
+
+  function isConfigured() {
+    return SUPABASE_URL && SUPABASE_URL !== 'PEGAR_AQUI_TU_PROJECT_URL'
+      && SUPABASE_ANON_KEY && SUPABASE_ANON_KEY !== 'PEGAR_AQUI_TU_ANON_KEY';
+  }
+
+  function renderConfigWarning() {
+    return `
+      <div class="config-warning">
+        <h2>⚙️ Configuración pendiente</h2>
+        <p>Configura las credenciales de Supabase en <code>index.html</code> antes de usar el portal.</p>
+        <code>const SUPABASE_URL = 'https://xxxx.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJ...';</code>
+        <p style="font-size:13px;color:#6B6B6B;margin-top:12px;">Las instrucciones completas están en el <strong>README.md</strong> del repo.</p>
+      </div>
+    `;
+  }
+
+  function renderHub() {
+    return `
+      <div class="hub">
+        <div>
+          <h1>Plan Integral</h1>
+          <p style="margin-top:8px;">Selecciona tu perfil para empezar.</p>
+        </div>
+        <div class="hub-cards">
+          <button class="hub-card lucia" data-user="lucia">
+            <span class="emoji">👩</span>
+            <div>Soy Lucía</div>
+          </button>
+          <button class="hub-card alfredo" data-user="alfredo">
+            <span class="emoji">👨</span>
+            <div>Soy Alfredo</div>
+          </button>
+        </div>
+      </div>
+    `;
+  }
+  function attachHubEvents() {
+    document.querySelectorAll('[data-user]').forEach(b => {
+      b.addEventListener('click', () => setUser(b.dataset.user));
+    });
+  }
+
+  function renderTab() {
+    if (state.tab === 'deporte') renderDeporte();
+    else if (state.tab === 'alimentacion') renderAlimentacion();
+    else if (state.tab === 'habitos') renderHabitos();
+    else if (state.tab === 'seguimiento') renderSeguimiento();
+  }
+
+  // -----------------------------------------------------------
+  // PESTAÑA DEPORTE
+  // -----------------------------------------------------------
+  function renderDeporte() {
+    const c = document.getElementById('screen-content');
+    const pilatesCards = state.user === 'lucia' ? `
+      <div class="card">
+        <div class="card-title">🧘 Pilates Reformer</div>
+        <div class="card-subtitle">Lunes y Miércoles, 20:00</div>
+        <div class="card-actions">
+          <button class="btn btn-primary" data-action="log-activity" data-type="pilates" data-day="lunes">Registrar lunes</button>
+          <button class="btn btn-primary" data-action="log-activity" data-type="pilates" data-day="miercoles">Registrar miércoles</button>
+        </div>
+      </div>` : '';
+
+    c.innerHTML = `
+      <h3 style="margin-bottom:12px;">Rutina semanal</h3>
+
+      <div class="card">
+        <div class="card-title">🏋️ ${ROUTINE.martes.label}</div>
+        <div class="card-subtitle">Duración: ${ROUTINE.martes.duration}</div>
+        <div class="card-actions">
+          <button class="btn btn-primary" data-action="log-workout" data-day="martes">Registrar entrenamiento</button>
+          <button class="btn btn-secondary" data-action="view-routine" data-day="martes">Ver ejercicios</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🏋️ ${ROUTINE.jueves.label}</div>
+        <div class="card-subtitle">Duración: ${ROUTINE.jueves.duration}</div>
+        <div class="card-actions">
+          <button class="btn btn-primary" data-action="log-workout" data-day="jueves">Registrar entrenamiento</button>
+          <button class="btn btn-secondary" data-action="view-routine" data-day="jueves">Ver ejercicios</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🏋️ ${ROUTINE.sabado.label}</div>
+        <div class="card-subtitle">Duración: ${ROUTINE.sabado.duration}</div>
+        <div class="card-actions">
+          <button class="btn btn-primary" data-action="log-workout" data-day="sabado">Registrar entrenamiento</button>
+          <button class="btn btn-secondary" data-action="view-routine" data-day="sabado">Ver ejercicios</button>
+        </div>
+      </div>
+
+      ${pilatesCards}
+
+      <div class="card">
+        <div class="card-title">🚶 Caminata</div>
+        <div class="card-subtitle">Cualquier día</div>
+        <div class="card-actions">
+          <button class="btn btn-primary" data-action="log-activity" data-type="caminata">Registrar caminata</button>
+        </div>
+      </div>
+
+      <button class="btn btn-secondary btn-block" data-action="view-history" style="margin-top:8px;">Ver historial</button>
+    `;
+
+    c.querySelectorAll('[data-action]').forEach(b => {
+      const action = b.dataset.action;
+      if (action === 'log-workout') b.addEventListener('click', () => openWorkoutForm(b.dataset.day));
+      else if (action === 'view-routine') b.addEventListener('click', () => openRoutineView(b.dataset.day));
+      else if (action === 'log-activity') b.addEventListener('click', () => openActivityForm(b.dataset.type, b.dataset.day));
+      else if (action === 'view-history') b.addEventListener('click', openWorkoutHistory);
+    });
+  }
+
+  function openRoutineView(day) {
+    const r = ROUTINE[day];
+    let html = `<div style="font-size:13px;color:#6B6B6B;margin-bottom:12px;">${r.duration}</div>`;
+    r.exercises.forEach(ex => {
+      html += `
+        <div class="exercise-row">
+          <div class="exercise-name">${escapeHtml(ex.name)}</div>
+          <div class="exercise-detail">${ex.sets} series × ${escapeHtml(ex.reps)} reps</div>
+          <div class="exercise-note">${escapeHtml(ex.note)}</div>
+        </div>
+      `;
+    });
+    openModal(r.label, html);
+  }
+
+  async function openWorkoutForm(day) {
+    const r = ROUTINE[day];
+    // Buscamos la última sesión para mostrar referencia de peso
+    let lastSession = null;
+    try {
+      const sessions = await sb.select('workout_sessions',
+        `user_name=eq.${state.user}&routine_day=eq.${day}&order=actual_date.desc&limit=1`);
+      if (sessions && sessions.length) {
+        const sets = await sb.select('workout_sets',
+          `session_id=eq.${sessions[0].id}&order=set_number.asc`);
+        lastSession = { session: sessions[0], sets };
+      }
+    } catch (e) { console.warn('No se pudo cargar historial', e); }
+
+    let html = `
+      <form id="workout-form">
+        <div class="form-group">
+          <label>Fecha real del entrenamiento</label>
+          <input type="date" name="actual_date" value="${todayISO()}" required />
+        </div>
+    `;
+
+    r.exercises.forEach((ex, idx) => {
+      html += `
+        <div class="card" style="margin-bottom:10px;padding:12px;">
+          <div class="exercise-name">${escapeHtml(ex.name)}</div>
+          <div class="exercise-detail">Plan: ${ex.sets} × ${escapeHtml(ex.reps)}</div>
+      `;
+      for (let s = 1; s <= ex.sets; s++) {
+        const lastSet = lastSession && lastSession.sets.find(x => x.exercise_name === ex.name && x.set_number === s);
+        const refTxt = lastSet ? `${lastSet.weight_kg || '-'} kg × ${lastSet.reps || '-'}` : '';
+        html += `
+          <div class="set-input-row">
+            <div class="set-label">S${s}</div>
+            <input type="number" step="0.5" min="0" placeholder="${refTxt ? 'Ant: ' + refTxt : 'kg'}"
+                   data-ex="${idx}" data-set="${s}" data-field="weight" />
+            <input type="number" min="0" placeholder="reps"
+                   data-ex="${idx}" data-set="${s}" data-field="reps" />
+          </div>
+        `;
+      }
+      html += `
+        <div class="form-group" style="margin:8px 0 0;">
+          <input type="text" placeholder="Nota del ejercicio (opcional)" data-ex="${idx}" data-field="note" />
+        </div>
+        </div>
+      `;
+    });
+
+    html += `
+        <div class="form-group">
+          <label>Nota general de la sesión</label>
+          <textarea name="notes" rows="2" placeholder="Cómo te sentiste, energía, etc."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Guardar sesión</button>
+      </form>
+    `;
+
+    openModal(`Registrar ${r.label.split('—')[1] ? r.label.split('—')[1].trim() : day}`, html, (overlay) => {
+      const form = overlay.querySelector('#workout-form');
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = form.querySelector('button[type=submit]');
+        btn.disabled = true; btn.textContent = 'Guardando…';
+
+        const actualDate = form.actual_date.value;
+        const notes = form.notes.value;
+        try {
+          const sessionRes = await sb.insert('workout_sessions', {
+            user_name: state.user,
+            routine_day: day,
+            planned_weekday: day,
+            actual_date: actualDate,
+            notes: notes || null
+          });
+          const sessionId = sessionRes[0].id;
+
+          const setsToInsert = [];
+          r.exercises.forEach((ex, idx) => {
+            const exNote = form.querySelector(`input[data-ex="${idx}"][data-field="note"]`).value;
+            for (let s = 1; s <= ex.sets; s++) {
+              const w = form.querySelector(`input[data-ex="${idx}"][data-set="${s}"][data-field="weight"]`).value;
+              const reps = form.querySelector(`input[data-ex="${idx}"][data-set="${s}"][data-field="reps"]`).value;
+              if (w || reps) {
+                setsToInsert.push({
+                  session_id: sessionId,
+                  exercise_name: ex.name,
+                  set_number: s,
+                  weight_kg: w ? parseFloat(w) : null,
+                  reps: reps ? parseInt(reps) : null,
+                  exercise_notes: (s === 1 && exNote) ? exNote : null
+                });
+              }
+            }
+          });
+          if (setsToInsert.length) await sb.insert('workout_sets', setsToInsert);
+
+          showToast('Sesión guardada');
+          closeModal();
+        } catch (err) {
+          alert('Error guardando: ' + err.message);
+          btn.disabled = false; btn.textContent = 'Guardar sesión';
+        }
+      });
+    });
+  }
+
+  function openActivityForm(type, day) {
+    const title = type === 'pilates' ? 'Registrar Pilates' : 'Registrar caminata';
+    const html = `
+      <form id="activity-form">
+        <div class="form-group">
+          <label>Fecha</label>
+          <input type="date" name="actual_date" value="${todayISO()}" required />
+        </div>
+        <div class="form-group">
+          <label>Duración (minutos)</label>
+          <input type="number" name="duration_minutes" min="1" placeholder="ej. 45" />
+        </div>
+        <div class="form-group">
+          <label>Nota</label>
+          <textarea name="notes" rows="2"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Guardar</button>
+      </form>
+    `;
+    openModal(title, html, (overlay) => {
+      overlay.querySelector('#activity-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const f = e.target;
+        const btn = f.querySelector('button[type=submit]');
+        btn.disabled = true; btn.textContent = 'Guardando…';
+        try {
+          await sb.insert('activities', {
+            user_name: state.user,
+            activity_type: type,
+            planned_weekday: day || null,
+            actual_date: f.actual_date.value,
+            duration_minutes: f.duration_minutes.value ? parseInt(f.duration_minutes.value) : null,
+            notes: f.notes.value || null
+          });
+          showToast('Actividad guardada');
+          closeModal();
+        } catch (err) {
+          alert('Error: ' + err.message);
+          btn.disabled = false; btn.textContent = 'Guardar';
+        }
+      });
+    });
+  }
+
+  async function openWorkoutHistory() {
+    openModal('Historial', '<div class="loading">Cargando…</div>', async (overlay) => {
+      const body = overlay.querySelector('.modal-body');
+      try {
+        const sessions = await sb.select('workout_sessions',
+          `user_name=eq.${state.user}&order=actual_date.desc&limit=15`);
+        const activities = await sb.select('activities',
+          `user_name=eq.${state.user}&order=actual_date.desc&limit=15`);
+
+        if (!sessions.length && !activities.length) {
+          body.innerHTML = `<div class="empty-state"><span class="emoji">📭</span>Aún no hay registros</div>`;
+          return;
+        }
+
+        let html = '';
+        if (sessions.length) {
+          html += '<h4 style="margin-bottom:8px;">Entrenamientos de pesas</h4>';
+          for (const s of sessions) {
+            const sets = await sb.select('workout_sets', `session_id=eq.${s.id}&order=set_number.asc`);
+            const dayLabel = ROUTINE[s.routine_day] ? ROUTINE[s.routine_day].label : s.routine_day;
+            const grouped = {};
+            sets.forEach(set => {
+              if (!grouped[set.exercise_name]) grouped[set.exercise_name] = [];
+              grouped[set.exercise_name].push(set);
+            });
+            let detail = '';
+            Object.keys(grouped).forEach(name => {
+              const ss = grouped[name].map(x => `${x.weight_kg || '-'}kg×${x.reps || '-'}`).join(', ');
+              detail += `<div style="margin-top:4px;"><strong>${escapeHtml(name)}:</strong> ${escapeHtml(ss)}</div>`;
+            });
+            html += `
+              <div class="history-item">
+                <div class="date">${s.actual_date} — ${escapeHtml(dayLabel)}</div>
+                <div class="detail">${detail}</div>
+                ${s.notes ? `<div class="detail" style="font-style:italic;">"${escapeHtml(s.notes)}"</div>` : ''}
+              </div>
+            `;
+          }
+        }
+
+        if (activities.length) {
+          html += '<h4 style="margin:16px 0 8px;">Otras actividades</h4>';
+          activities.forEach(a => {
+            html += `
+              <div class="history-item">
+                <div class="date">${a.actual_date} — ${escapeHtml(a.activity_type)}${a.duration_minutes?` (${a.duration_minutes} min)`:''}</div>
+                ${a.notes ? `<div class="detail">"${escapeHtml(a.notes)}"</div>` : ''}
+              </div>
+            `;
+          });
+        }
+        body.innerHTML = html;
+      } catch (err) {
+        body.innerHTML = `<div class="empty-state">Error: ${escapeHtml(err.message)}</div>`;
+      }
+    });
+  }
+
+  // -----------------------------------------------------------
+  // PESTAÑA ALIMENTACIÓN
+  // -----------------------------------------------------------
+  let mealView = { week: 1, day: 'lunes' };
+
+  function renderAlimentacion() {
+    const c = document.getElementById('screen-content');
+    c.innerHTML = `
+      <h3 style="margin-bottom:12px;">Plan diario</h3>
+      <div class="pill-row" id="week-pills">
+        <button class="pill ${mealView.week===1?'active':''}" data-week="1">Semana 1</button>
+        <button class="pill ${mealView.week===2?'active':''}" data-week="2">Semana 2</button>
+      </div>
+      <div class="pill-row" id="day-pills">
+        ${DAYS_ORDER.map(d =>
+          `<button class="pill ${mealView.day===d?'active':''}" data-day="${d}">${DAYS_LABEL[d]}</button>`
+        ).join('')}
+      </div>
+      <div class="card" id="meal-plan-card"></div>
+
+      <button class="btn btn-primary btn-block" data-action="log-meal" style="margin:8px 0;">
+        Registrar comida de hoy
+      </button>
+      <button class="btn btn-secondary btn-block" data-action="meal-history">
+        Ver historial
+      </button>
+    `;
+
+    c.querySelectorAll('#week-pills .pill').forEach(p => p.addEventListener('click', () => {
+      mealView.week = parseInt(p.dataset.week); renderAlimentacion();
+    }));
+    c.querySelectorAll('#day-pills .pill').forEach(p => p.addEventListener('click', () => {
+      mealView.day = p.dataset.day; renderAlimentacion();
+    }));
+    c.querySelector('[data-action="log-meal"]').addEventListener('click', openMealForm);
+    c.querySelector('[data-action="meal-history"]').addEventListener('click', openMealHistory);
+
+    renderMealPlanCard();
+  }
+
+  function renderMealPlanCard() {
+    const card = document.getElementById('meal-plan-card');
+    const data = MEAL_PLAN[mealView.week][mealView.day];
+    const types = ['desayuno','almuerzo','snack','cena'];
+    let html = `<div class="card-title">${DAYS_LABEL[mealView.day]} — Semana ${mealView.week}</div>`;
+    types.forEach(t => {
+      const desc = data[t][state.user];
+      html += `
+        <div class="meal-block">
+          <div class="meal-type">${t}</div>
+          <div class="meal-description">${escapeHtml(desc)}</div>
+        </div>
+      `;
+    });
+    card.innerHTML = html;
+  }
+
+  function openMealForm() {
+    const types = ['desayuno','almuerzo','snack','cena'];
+    let html = `<form id="meal-form">
+      <div class="form-group">
+        <label>Fecha</label>
+        <input type="date" name="log_date" value="${todayISO()}" required />
+      </div>`;
+    types.forEach(t => {
+      html += `
+        <div class="card" style="padding:12px;">
+          <div class="meal-type">${t}</div>
+          <div class="form-group" style="margin-top:8px;">
+            <label>
+              <input type="checkbox" name="${t}_followed" checked /> Cumplí el plan
+            </label>
+          </div>
+          <div class="form-group">
+            <label>Qué comí (descripción)</label>
+            <textarea name="${t}_description" rows="2"></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Proteína (g)</label>
+              <input type="number" step="0.1" min="0" name="${t}_protein" />
+            </div>
+            <div class="form-group">
+              <label>Nota</label>
+              <input type="text" name="${t}_notes" />
+            </div>
+          </div>
+        </div>
+      `;
+    });
+    html += `<button type="submit" class="btn btn-primary btn-block">Guardar</button></form>`;
+
+    openModal('Registrar comidas', html, (overlay) => {
+      overlay.querySelector('#meal-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const f = e.target;
+        const btn = f.querySelector('button[type=submit]');
+        btn.disabled = true; btn.textContent = 'Guardando…';
+        try {
+          const date = f.log_date.value;
+          const rows = [];
+          types.forEach(t => {
+            const desc = f[`${t}_description`].value.trim();
+            const prot = f[`${t}_protein`].value;
+            const notes = f[`${t}_notes`].value.trim();
+            const followed = f[`${t}_followed`].checked;
+            if (desc || prot || notes || !followed) {
+              rows.push({
+                user_name: state.user,
+                log_date: date,
+                meal_type: t,
+                followed_plan: followed,
+                description: desc || null,
+                protein_grams: prot ? parseFloat(prot) : null,
+                notes: notes || null
+              });
+            }
+          });
+          if (!rows.length) {
+            alert('No completaste ninguna comida');
+            btn.disabled = false; btn.textContent = 'Guardar';
+            return;
+          }
+          await sb.insert('meal_logs', rows);
+          showToast('Comidas guardadas');
+          closeModal();
+        } catch (err) {
+          alert('Error: ' + err.message);
+          btn.disabled = false; btn.textContent = 'Guardar';
+        }
+      });
+    });
+  }
+
+  async function openMealHistory() {
+    openModal('Historial de alimentación', '<div class="loading">Cargando…</div>', async (overlay) => {
+      const body = overlay.querySelector('.modal-body');
+      try {
+        const logs = await sb.select('meal_logs',
+          `user_name=eq.${state.user}&order=log_date.desc,meal_type.asc&limit=80`);
+        if (!logs.length) {
+          body.innerHTML = `<div class="empty-state"><span class="emoji">🥗</span>Aún no has registrado comidas</div>`;
+          return;
+        }
+        const byDate = {};
+        logs.forEach(l => {
+          if (!byDate[l.log_date]) byDate[l.log_date] = [];
+          byDate[l.log_date].push(l);
+        });
+        const goal = PROTEIN_GOAL[state.user];
+        let html = `<p style="font-size:13px;color:#6B6B6B;margin-bottom:12px;">
+          Objetivo de proteína diaria: <strong>${goal.min}-${goal.max} g</strong>
+        </p>`;
+        Object.keys(byDate).forEach(date => {
+          const meals = byDate[date];
+          const totalProtein = meals.reduce((sum, m) => sum + (parseFloat(m.protein_grams) || 0), 0);
+          const followed = meals.filter(m => m.followed_plan).length;
+          const adh = Math.round((followed / meals.length) * 100);
+          const protTag = totalProtein >= goal.min ? 'tag-good' : 'tag-bad';
+          html += `
+            <div class="history-item">
+              <div class="date">${date}</div>
+              <div class="detail">
+                Adherencia: <span class="tag ${adh>=75?'tag-good':'tag-bad'}">${adh}%</span>
+                · Proteína: <span class="tag ${protTag}">${totalProtein.toFixed(0)} g</span>
+              </div>
+              ${meals.map(m => `
+                <div class="detail" style="margin-top:4px;">
+                  <strong>${m.meal_type}:</strong>
+                  ${escapeHtml(m.description || '(sin descripción)')}
+                  ${m.protein_grams ? ` · ${m.protein_grams}g prot` : ''}
+                </div>
+              `).join('')}
+            </div>
+          `;
+        });
+        body.innerHTML = html;
+      } catch (err) {
+        body.innerHTML = `<div class="empty-state">Error: ${escapeHtml(err.message)}</div>`;
+      }
+    });
+  }
+
+  // -----------------------------------------------------------
+  // PESTAÑA HÁBITOS
+  // -----------------------------------------------------------
+  async function renderHabitos() {
+    const c = document.getElementById('screen-content');
+    c.innerHTML = `<div class="loading">Cargando hábitos…</div>`;
+
+    try {
+      let habits = await sb.select('habits',
+        `user_name=eq.${state.user}&active=eq.true&order=created_at.asc`);
+
+      // Si nunca se han creado hábitos, sembramos los default
+      if (!habits || !habits.length) {
+        const allHabits = await sb.select('habits', `user_name=eq.${state.user}&limit=1`);
+        if (!allHabits.length) {
+          const seed = DEFAULT_HABITS.map(h => ({
+            user_name: state.user, name: h.name, icon: h.icon, active: true
+          }));
+          await sb.insert('habits', seed);
+          habits = await sb.select('habits',
+            `user_name=eq.${state.user}&active=eq.true&order=created_at.asc`);
+        }
+      }
+
+      // Logs de hoy
+      const today = todayISO();
+      const ids = habits.map(h => h.id);
+      let todayLogs = [];
+      if (ids.length) {
+        todayLogs = await sb.select('habit_logs',
+          `habit_id=in.(${ids.join(',')})&log_date=eq.${today}`);
+      }
+      const doneToday = new Set(todayLogs.filter(l => l.completed).map(l => l.habit_id));
+
+      // Cálculo de rachas
+      const streaks = {};
+      for (const h of habits) {
+        const logs = await sb.select('habit_logs',
+          `habit_id=eq.${h.id}&completed=eq.true&order=log_date.desc&limit=60`);
+        streaks[h.id] = calcStreak(logs.map(l => l.log_date));
+      }
+
+      let html = `<h3 style="margin-bottom:12px;">Hábitos de hoy</h3>`;
+      if (!habits.length) {
+        html += `<div class="empty-state"><span class="emoji">✨</span>No tienes hábitos activos</div>`;
+      } else {
+        habits.forEach(h => {
+          const done = doneToday.has(h.id);
+          html += `
+            <div class="habit-row">
+              <div class="habit-icon">${escapeHtml(h.icon || '⭐')}</div>
+              <div class="habit-info">
+                <div class="habit-name">${escapeHtml(h.name)}</div>
+                <div class="habit-streak">🔥 ${streaks[h.id]} día${streaks[h.id]===1?'':'s'} seguidos</div>
+              </div>
+              <button class="habit-edit" data-edit="${h.id}">✏️</button>
+              <button class="habit-check ${done?'done':''}" data-toggle="${h.id}" data-done="${done?'1':'0'}">
+                ${done ? '✓' : ''}
+              </button>
+              <button class="habit-edit" data-calendar="${h.id}" data-name="${escapeHtml(h.name)}">📅</button>
+            </div>
+          `;
+        });
+      }
+      html += `
+        <button class="btn btn-primary btn-block" data-action="add-habit" style="margin-top:8px;">+ Agregar hábito</button>
+      `;
+      c.innerHTML = html;
+
+      c.querySelectorAll('[data-toggle]').forEach(b => b.addEventListener('click', async () => {
+        const id = b.dataset.toggle;
+        const wasDone = b.dataset.done === '1';
+        try {
+          if (wasDone) {
+            await sb.delete('habit_logs', `habit_id=eq.${id}&log_date=eq.${today}`);
+          } else {
+            await sb.upsert('habit_logs', { habit_id: id, log_date: today, completed: true });
+          }
+          renderHabitos();
+        } catch (err) { alert('Error: ' + err.message); }
+      }));
+      c.querySelectorAll('[data-edit]').forEach(b => b.addEventListener('click', () => openHabitForm(habits.find(h => h.id === b.dataset.edit))));
+      c.querySelectorAll('[data-calendar]').forEach(b => b.addEventListener('click', () => openHabitCalendar(b.dataset.calendar, b.dataset.name)));
+      c.querySelector('[data-action="add-habit"]').addEventListener('click', () => openHabitForm(null));
+
+    } catch (err) {
+      c.innerHTML = `<div class="empty-state">Error: ${escapeHtml(err.message)}</div>`;
+    }
+  }
+
+  function calcStreak(datesDesc) {
+    if (!datesDesc.length) return 0;
+    const set = new Set(datesDesc);
+    let streak = 0;
+    let cur = new Date();
+    while (true) {
+      const iso = cur.toISOString().slice(0,10);
+      if (set.has(iso)) {
+        streak++;
+        cur.setDate(cur.getDate() - 1);
+      } else if (streak === 0 && iso === todayISO()) {
+        // Permitimos que la racha empiece desde ayer si hoy aún no marcamos
+        cur.setDate(cur.getDate() - 1);
+      } else {
+        break;
+      }
+    }
+    return streak;
+  }
+
+  function openHabitForm(habit) {
+    const isEdit = !!habit;
+    const html = `
+      <form id="habit-form">
+        <div class="form-group">
+          <label>Nombre</label>
+          <input type="text" name="name" required value="${habit?escapeHtml(habit.name):''}" />
+        </div>
+        <div class="form-group">
+          <label>Ícono (emoji)</label>
+          <input type="text" name="icon" maxlength="2" value="${habit?escapeHtml(habit.icon||''):''}" />
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">${isEdit?'Actualizar':'Crear'}</button>
+        ${isEdit?'<button type="button" class="btn btn-ghost btn-block btn-danger" data-action="delete" style="margin-top:8px;">Eliminar hábito</button>':''}
+      </form>
+    `;
+    openModal(isEdit?'Editar hábito':'Nuevo hábito', html, (overlay) => {
+      overlay.querySelector('#habit-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const f = e.target;
+        const name = f.name.value.trim();
+        const icon = f.icon.value.trim();
+        if (!name) return;
+        try {
+          if (isEdit) {
+            await sb.update('habits', `id=eq.${habit.id}`, { name, icon: icon || null });
+          } else {
+            await sb.insert('habits', { user_name: state.user, name, icon: icon || null, active: true });
+          }
+          showToast(isEdit?'Actualizado':'Hábito creado');
+          closeModal();
+          renderHabitos();
+        } catch (err) { alert('Error: ' + err.message); }
+      });
+      if (isEdit) {
+        overlay.querySelector('[data-action="delete"]').addEventListener('click', async () => {
+          if (!confirm('¿Desactivar este hábito?')) return;
+          try {
+            await sb.update('habits', `id=eq.${habit.id}`, { active: false });
+            showToast('Hábito eliminado');
+            closeModal();
+            renderHabitos();
+          } catch (err) { alert('Error: ' + err.message); }
+        });
+      }
+    });
+  }
+
+  async function openHabitCalendar(habitId, habitName) {
+    openModal(habitName, '<div class="loading">Cargando…</div>', async (overlay) => {
+      const body = overlay.querySelector('.modal-body');
+      try {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = today.getMonth();
+        const first = new Date(year, month, 1);
+        const last = new Date(year, month + 1, 0);
+        const startIso = first.toISOString().slice(0,10);
+        const endIso = last.toISOString().slice(0,10);
+
+        const logs = await sb.select('habit_logs',
+          `habit_id=eq.${habitId}&log_date=gte.${startIso}&log_date=lte.${endIso}&completed=eq.true`);
+        const doneDates = new Set(logs.map(l => l.log_date));
+
+        const monthName = first.toLocaleDateString('es', { month: 'long', year: 'numeric' });
+        let html = `<h4 style="text-transform:capitalize;margin-bottom:8px;">${monthName}</h4>
+                    <div style="font-size:12px;color:#6B6B6B;margin-bottom:4px;">L M M J V S D</div>
+                    <div class="calendar-grid">`;
+        // Espacios para alinear el primer día (lunes = 0)
+        const dayOfWeek = (first.getDay() + 6) % 7;
+        for (let i = 0; i < dayOfWeek; i++) html += `<div></div>`;
+        for (let d = 1; d <= last.getDate(); d++) {
+          const dateIso = new Date(year, month, d).toISOString().slice(0,10);
+          const isFuture = dateIso > todayISO();
+          const isDone = doneDates.has(dateIso);
+          html += `<div class="calendar-cell ${isDone?'done':''} ${isFuture?'future':''}">${d}</div>`;
+        }
+        html += `</div>`;
+        body.innerHTML = html;
+      } catch (err) {
+        body.innerHTML = `<div class="empty-state">Error: ${escapeHtml(err.message)}</div>`;
+      }
+    });
+  }
+
+  // -----------------------------------------------------------
+  // PESTAÑA SEGUIMIENTO
+  // -----------------------------------------------------------
+  async function renderSeguimiento() {
+    const c = document.getElementById('screen-content');
+    c.innerHTML = `<div class="loading">Cargando…</div>`;
+
+    try {
+      const records = await sb.select('body_tracking',
+        `user_name=eq.${state.user}&order=log_date.asc&limit=200`);
+
+      const latest = records[records.length - 1];
+      const first = records[0];
+
+      let statHtml = '';
+      if (latest) {
+        const deltaW = first && latest.weight_kg && first.weight_kg
+          ? (latest.weight_kg - first.weight_kg).toFixed(1) : null;
+        const deltaC = first && latest.waist_cm && first.waist_cm
+          ? (latest.waist_cm - first.waist_cm).toFixed(1) : null;
+        statHtml = `
+          <div class="stat-row">
+            <div class="stat-box">
+              <div class="stat-label">Peso actual</div>
+              <div class="stat-value accent">${latest.weight_kg || '-'} kg</div>
+              ${deltaW !== null ? `<div style="font-size:12px;color:${deltaW<0?'#5A7958':'#A05B4D'};">${deltaW>0?'+':''}${deltaW} kg</div>` : ''}
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">Cintura</div>
+              <div class="stat-value accent">${latest.waist_cm || '-'} cm</div>
+              ${deltaC !== null ? `<div style="font-size:12px;color:${deltaC<0?'#5A7958':'#A05B4D'};">${deltaC>0?'+':''}${deltaC} cm</div>` : ''}
+            </div>
+          </div>
+        `;
+      }
+
+      c.innerHTML = `
+        <h3 style="margin-bottom:12px;">Seguimiento corporal</h3>
+        ${statHtml}
+        <button class="btn btn-primary btn-block" data-action="add-tracking">+ Registrar medición</button>
+        <div id="chart-area" style="margin-top:16px;"></div>
+        <div id="history-area" style="margin-top:16px;"></div>
+      `;
+
+      c.querySelector('[data-action="add-tracking"]').addEventListener('click', openTrackingForm);
+
+      renderChart(records);
+      renderTrackingHistory(records);
+
+    } catch (err) {
+      c.innerHTML = `<div class="empty-state">Error: ${escapeHtml(err.message)}</div>`;
+    }
+  }
+
+  function renderChart(records) {
+    const area = document.getElementById('chart-area');
+    if (!records.length) {
+      area.innerHTML = `<div class="empty-state"><span class="emoji">📈</span>Aún no hay mediciones</div>`;
+      return;
+    }
+    // Gráfico SVG simple con peso y cintura
+    const weights = records.filter(r => r.weight_kg).map(r => ({ date: r.log_date, value: parseFloat(r.weight_kg) }));
+    const waists = records.filter(r => r.waist_cm).map(r => ({ date: r.log_date, value: parseFloat(r.waist_cm) }));
+
+    area.innerHTML = `
+      <div class="chart-container">
+        <div style="font-size:13px;font-weight:500;margin-bottom:8px;">Peso (kg)</div>
+        ${renderLineSvg(weights, '#8FA68E')}
+      </div>
+      <div class="chart-container">
+        <div style="font-size:13px;font-weight:500;margin-bottom:8px;">Cintura (cm)</div>
+        ${renderLineSvg(waists, '#A8B5C8')}
+      </div>
+    `;
+  }
+
+  function renderLineSvg(points, color) {
+    if (points.length < 1) return `<div class="empty-state" style="padding:12px;">Sin datos</div>`;
+    if (points.length === 1) {
+      return `<div style="text-align:center;padding:24px;font-size:20px;font-weight:600;color:${color};">${points[0].value}</div>`;
+    }
+    const w = 320, h = 140, padX = 30, padY = 20;
+    const xs = points.map((_,i) => padX + (i*(w-2*padX))/(points.length-1));
+    const values = points.map(p => p.value);
+    const min = Math.min(...values), max = Math.max(...values);
+    const range = max - min || 1;
+    const ys = values.map(v => padY + (h-2*padY) * (1 - (v - min)/range));
+    const path = xs.map((x,i) => `${i===0?'M':'L'}${x.toFixed(1)},${ys[i].toFixed(1)}`).join(' ');
+    const circles = xs.map((x,i) => `<circle cx="${x.toFixed(1)}" cy="${ys[i].toFixed(1)}" r="3" fill="${color}" />`).join('');
+    return `
+      <svg class="chart-svg" viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid meet">
+        <text x="${padX-4}" y="${padY+4}" font-size="10" fill="#6B6B6B" text-anchor="end">${max.toFixed(1)}</text>
+        <text x="${padX-4}" y="${h-padY+4}" font-size="10" fill="#6B6B6B" text-anchor="end">${min.toFixed(1)}</text>
+        <path d="${path}" fill="none" stroke="${color}" stroke-width="2" />
+        ${circles}
+      </svg>
+    `;
+  }
+
+  function renderTrackingHistory(records) {
+    const area = document.getElementById('history-area');
+    if (!records.length) { area.innerHTML = ''; return; }
+    const rows = [...records].reverse().slice(0, 30).map(r => `
+      <tr>
+        <td>${r.log_date}</td>
+        <td>${r.weight_kg || '-'}</td>
+        <td>${r.waist_cm || '-'}</td>
+        <td>${escapeHtml(r.notes || '')}</td>
+      </tr>
+    `).join('');
+    area.innerHTML = `
+      <h4 style="margin-bottom:8px;">Historial</h4>
+      <div class="card">
+        <table>
+          <thead><tr><th>Fecha</th><th>Peso</th><th>Cintura</th><th>Notas</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  function openTrackingForm() {
+    const html = `
+      <form id="tracking-form">
+        <div class="form-group">
+          <label>Fecha</label>
+          <input type="date" name="log_date" value="${todayISO()}" required />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Peso (kg)</label>
+            <input type="number" step="0.1" min="0" name="weight_kg" />
+          </div>
+          <div class="form-group">
+            <label>Cintura (cm)</label>
+            <input type="number" step="0.1" min="0" name="waist_cm" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Notas</label>
+          <textarea name="notes" rows="2"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Guardar</button>
+      </form>
+    `;
+    openModal('Registrar medición', html, (overlay) => {
+      overlay.querySelector('#tracking-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const f = e.target;
+        const btn = f.querySelector('button[type=submit]');
+        const weight = f.weight_kg.value;
+        const waist = f.waist_cm.value;
+        if (!weight && !waist) {
+          alert('Ingresa al menos peso o cintura'); return;
+        }
+        btn.disabled = true; btn.textContent = 'Guardando…';
+        try {
+          await sb.insert('body_tracking', {
+            user_name: state.user,
+            log_date: f.log_date.value,
+            weight_kg: weight ? parseFloat(weight) : null,
+            waist_cm: waist ? parseFloat(waist) : null,
+            notes: f.notes.value || null
+          });
+          showToast('Medición guardada');
+          closeModal();
+          renderSeguimiento();
+        } catch (err) {
+          alert('Error: ' + err.message);
+          btn.disabled = false; btn.textContent = 'Guardar';
+        }
+      });
+    });
+  }
+
+  // -----------------------------------------------------------
+  // Inicio
+  // -----------------------------------------------------------
+  render();
+</script>
+
+</body>
+</html>
