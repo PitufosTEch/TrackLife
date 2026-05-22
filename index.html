@@ -494,42 +494,49 @@
   // Datos estáticos: rutinas, plan de alimentación, hábitos
   // -----------------------------------------------------------
   const ROUTINE = {
-    martes: {
-      label: 'MARTES — Tren inferior',
-      duration: '50 min',
+    lunes: {
+      label: 'LUNES — Full Body Fuerza Base',
+      duration: '~60 min',
       exercises: [
-        { name: 'Sentadilla con barra (back squat)', sets: 4, reps: '8-10', note: 'El rey. Bajar hasta que muslos queden paralelos al suelo.' },
-        { name: 'Peso muerto rumano con mancuernas', sets: 3, reps: '10-12', note: 'Espalda recta, sentir glúteo e isquios estirar.' },
-        { name: 'Hip thrust con barra o máquina', sets: 4, reps: '10-12', note: 'Crítico para glúteos. Apoya espalda alta en banca.' },
-        { name: 'Prensa de piernas', sets: 3, reps: '12', note: 'Pies más arriba en plataforma = más glúteo.' },
-        { name: 'Curl de isquios sentada (máquina)', sets: 3, reps: '12', note: 'Aislamiento posterior.' },
-        { name: 'Elevación de talones de pie', sets: 3, reps: '15', note: 'Pantorrillas.' }
+        { name: 'Calentamiento: trotadora inclinada, bicicleta o elíptica suave', sets: 1, reps: '8 min', note: 'Subir pulsaciones gradualmente.' },
+        { name: 'Sentadilla goblet con mancuerna', sets: 4, reps: '10-12', note: 'Núcleo del día, peso desafiante.' },
+        { name: 'Peso muerto rumano con mancuernas o barra', sets: 4, reps: '10', note: 'Espalda recta, sentir glúteo e isquios estirar.' },
+        { name: 'Press de pecho con mancuernas', sets: 3, reps: '10-12', note: 'Bench plano o ligeramente inclinado.' },
+        { name: 'Remo con mancuerna a una mano', sets: 3, reps: '12 por lado', note: 'Apoyada en banca, codo pegado al cuerpo.' },
+        { name: 'Press militar con mancuernas', sets: 3, reps: '10', note: 'De pie o sentada.' },
+        { name: 'Hip thrust con barra o mancuerna', sets: 4, reps: '12', note: 'Crítico para glúteos. Apoya espalda alta en banca.' },
+        { name: 'Plancha', sets: 3, reps: '30-45 seg', note: 'Core.' },
+        { name: 'Final: caminata inclinada o bicicleta moderada', sets: 1, reps: '10 min', note: 'Bajar pulsaciones y quemar extra.' }
       ]
     },
-    jueves: {
-      label: 'JUEVES — Tren superior',
-      duration: '50 min',
+    miercoles: {
+      label: 'MIÉRCOLES — Glúteo, Espalda y Core',
+      duration: '~60 min',
       exercises: [
-        { name: 'Press banca con mancuernas', sets: 4, reps: '8-10', note: 'Mancuernas mejor que barra para hombros femeninos.' },
-        { name: 'Remo con mancuerna a un brazo (apoyada en banca)', sets: 4, reps: '10 por lado', note: 'El mejor para espalda y postura.' },
-        { name: 'Press militar sentada con mancuernas', sets: 3, reps: '10-12', note: 'Hombros.' },
-        { name: 'Jalón al pecho (polea alta)', sets: 3, reps: '10-12', note: 'Espalda alta, define línea de cintura.' },
-        { name: 'Curl de bíceps con mancuernas', sets: 3, reps: '12', note: 'Brazos firmes.' },
-        { name: 'Extensión de tríceps en polea', sets: 3, reps: '12', note: 'Adiós al brazo flácido.' },
-        { name: 'Plancha', sets: 3, reps: '30-45 seg', note: 'Core.' }
+        { name: 'Calentamiento: elíptica o bici', sets: 1, reps: '8 min', note: 'Activar tren inferior.' },
+        { name: 'Zancadas caminando o estáticas con mancuernas', sets: 3, reps: '10 por pierna', note: 'Rodilla atrás casi al piso.' },
+        { name: 'Hip thrust con banda + peso', sets: 4, reps: '12-15', note: 'Banda sobre rodillas para activar glúteo medio.' },
+        { name: 'Jalón con banda elástica o remo con banda', sets: 3, reps: '15', note: 'Espalda alta, codos hacia atrás.' },
+        { name: 'Peso muerto rumano a una pierna con mancuerna', sets: 3, reps: '10 por pierna', note: 'Equilibrio + glúteo unilateral.' },
+        { name: 'Curl femoral con banda o puente de glúteo', sets: 3, reps: '15', note: 'Aislamiento posterior.' },
+        { name: 'Elevaciones laterales de hombro', sets: 3, reps: '12-15', note: 'Definir hombro.' },
+        { name: 'Dead bug o crunch controlado', sets: 3, reps: '12-15', note: 'Core sin lastimar espalda baja.' },
+        { name: 'Extra opcional: patada de glúteo + abducción lateral con pesos de tobillo', sets: 2, reps: '20 por lado', note: 'Solo si te queda energía.' }
       ]
     },
-    sabado: {
-      label: 'SÁBADO — Full body',
-      duration: '45-50 min',
+    viernes: {
+      label: 'VIERNES — Metabólico / Dinámico',
+      duration: '~50 min',
       exercises: [
-        { name: 'Sentadilla goblet con mancuerna', sets: 3, reps: '12', note: 'Más liviana que martes.' },
-        { name: 'Peso muerto sumo con mancuerna', sets: 3, reps: '12', note: 'Pies anchos, agarra mancuerna por arriba.' },
-        { name: 'Press inclinado con mancuernas', sets: 3, reps: '10-12', note: 'Banca a 30-45°.' },
-        { name: 'Remo en máquina o polea baja', sets: 3, reps: '12', note: 'Espalda media.' },
-        { name: 'Estocadas caminando con mancuernas', sets: 3, reps: '10 por pierna', note: 'Glúteo + cardio.' },
-        { name: 'Aperturas con mancuernas o pec deck', sets: 3, reps: '12', note: 'Pecho.' },
-        { name: 'Abdominales en polea (cable crunch)', sets: 3, reps: '15', note: 'Core con carga.' }
+        { name: 'Calentamiento: trotadora o elíptica', sets: 1, reps: '8 min', note: 'Subir pulsaciones.' },
+        { name: 'Sentadilla con mancuerna', sets: 4, reps: '12', note: 'CIRCUITO: 3-4 vueltas seguidas, descansa 60-90s entre vueltas. Las 4 "series" = 4 vueltas.' },
+        { name: 'Remo con mancuernas', sets: 4, reps: '12', note: 'Parte del circuito.' },
+        { name: 'Peso muerto rumano', sets: 4, reps: '12', note: 'Parte del circuito.' },
+        { name: 'Press de pecho con mancuernas', sets: 4, reps: '12', note: 'Parte del circuito.' },
+        { name: 'Step-up a banco o cajón', sets: 4, reps: '10 por pierna', note: 'Parte del circuito.' },
+        { name: 'Press de hombros', sets: 4, reps: '10', note: 'Parte del circuito.' },
+        { name: 'Abducción de cadera con banda', sets: 4, reps: '20', note: 'Parte del circuito.' },
+        { name: 'Plancha o mountain climbers lentos', sets: 4, reps: '30 seg', note: 'Parte del circuito.' }
       ]
     }
   };
